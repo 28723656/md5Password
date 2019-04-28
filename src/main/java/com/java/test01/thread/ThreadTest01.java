@@ -7,7 +7,14 @@ import java.util.Map;
 
 public class ThreadTest01 implements Runnable{
 
-    String finalPassword = "fab18667b56b6803c1e5d33e4a6cf228";
+    String finalPassword = "3c3319e05bddd54454f6c6abef94b24f";
+    private int startNum = 0;
+    private int  endNum =0;
+
+    public ThreadTest01(int startNum, int endNum) {
+        this.startNum = startNum;
+        this.endNum = endNum;
+    }
 
     @Override
     public void run() {
@@ -23,7 +30,7 @@ public class ThreadTest01 implements Runnable{
         //中断警示
         boolean breakDown = false;
 
-        for(int i=0;i<999;i++){
+        for(int i=startNum;i<endNum;i++){
             // 1.数字处理
             if(i<10){
                 correctNum = "000"+i;
@@ -51,11 +58,10 @@ public class ThreadTest01 implements Runnable{
                     }else {
                         newPassword =  Md5Util.getMD5WithSalt(newPassword);
                     }
-
-                    if(newPassword.equals(finalPassword)){
-                        breakDown = true;
-                        break;
-                    }
+                }
+                if(newPassword.equals(finalPassword)){
+                    breakDown = true;
+                    break;
                 }
             }
             // 如果收到中断提示
@@ -65,6 +71,8 @@ public class ThreadTest01 implements Runnable{
         }
         long endTime = System.currentTimeMillis();
         String costTime ="总共用时："+(endTime-startTime)/1000+"秒";
-        System.out.println("-----------------------------"+costTime+"\n正确密码为："+correctNum+"-----------------------------");
+        if(breakDown){
+            System.out.println("-----------------------------"+costTime+"\n正确密码为："+correctNum+"-----------------------------");
+        }
     }
 }

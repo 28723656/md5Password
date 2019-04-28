@@ -33,7 +33,7 @@ public class HelloController {
         Random random = new Random();
         for (int i = 0; i < 10; i++) {
             int randomNum = random.nextInt(100);
-            if (randomNum > 50) {
+            if (randomNum > 0) {
                 toBeMd5Number = Md5Util.getMD5WithSalt(toBeMd5Number);
             } else {
                 toBeMd5Number = Md5Util.getMD5(toBeMd5Number);
@@ -57,6 +57,9 @@ public class HelloController {
         //中断警示
         boolean breakDown = false;
 
+        // 第一次参与加密的数字
+        String firstTobeDoneNumber = "";
+
 
         for(int i=0;i<9999;i++){
 
@@ -77,22 +80,27 @@ public class HelloController {
             // 首先对密码进行一次普通的md5加密
             newPassword = Md5Util.getMD5(correctNum);
 
+            // 保存第一次的密文
+            firstTobeDoneNumber = newPassword;
             // 2.尝试2^10可能性
                 for(int m=0;m<1024;m++){
                     int[] tenPossible = mapArr.get(m);
-
                     // 3.每个进行加密10次
                     for(int timesNum =0;timesNum <10;timesNum ++){
+                        // 保证第一次加密的是同一个
+                        if(timesNum ==0){
+                            newPassword = firstTobeDoneNumber;
+                        }
+
                         if(tenPossible[timesNum]==0){
                             newPassword =  Md5Util.getMD5(newPassword);
                         }else {
                             newPassword =  Md5Util.getMD5WithSalt(newPassword);
                         }
-
-                        if(newPassword.equals(finalPassword)){
-                            breakDown = true;
-                            break;
-                        }
+                    }
+                    if(newPassword.equals(finalPassword)){
+                        breakDown = true;
+                        break;
                     }
 
 
@@ -109,7 +117,12 @@ public class HelloController {
         }
         long endTime = System.currentTimeMillis();
         String costTime ="总共用时："+(endTime-startTime)/1000+"秒";
-        return correctNum+"<hr/>"+costTime;
+        System.out.println(costTime);
+        if(breakDown){
+            return "正确答案："+correctNum;
+        }else{
+            return "no answer";
+        }
     }
 
 
